@@ -1,0 +1,60 @@
+#include <cstdio>
+#include <cstring>
+
+const int MAX_N = 100001;
+
+typedef long long ll;
+
+int n;
+int fa[MAX_N], rank[MAX_N];
+
+bool lucky(int w) {
+    while (w > 0) {
+        if (w % 10 != 4 && w % 10 != 7) return false;
+        w /= 10;
+    }
+    return true;
+}
+
+void makeSet() {
+    for (int i = 0; i <= n; ++i) {
+        fa[i] = i; rank[i] = 0;
+    }
+}
+int find(int x) {
+    return x == fa[x] ? x :  fa[x] = find(fa[x]);
+}
+void unionSet(int x, int y) {
+    int rx = find(x), ry = find(y);
+    if (rx == ry) return ;
+    if (rank[rx] < rank[ry]) {
+        fa[rx] = ry;
+    } else {
+        fa[ry] = rx;
+        if (rank[rx] == rank[ry]) ++rank[rx];
+    }
+}
+
+ll cnt[MAX_N];
+void solve() {
+    for (int i = 0; i < n; ++i) {
+        ++cnt[find(i)];
+    }
+    ll ans = 0;
+    for (int i = 0; i < n; ++i) {
+        ans += cnt[i] * ((ll)n - cnt[i]) * ((ll)n - cnt[i] - 1);
+    }
+    printf("%I64d\n", ans);
+}
+int main() {
+    scanf("%d", &n);
+    makeSet();
+    for (int i = 1; i < n; ++i) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        --u, --v;
+        if (!lucky(w)) unionSet(u, v);
+    }
+    solve();
+    return 0;
+}

@@ -1,0 +1,49 @@
+#include <cstdio>
+#include <cstring>
+
+const int MAX_N = 100001;
+const int MAX_M = 1000001;
+const int mod = 1000000007;
+
+typedef long long ll;
+
+int n;
+int a[MAX_N];
+ll count[MAX_M];
+
+int lowbit(int x) { return x & -x; }
+void add(int k, int v) {
+    while (k < MAX_M) {
+        count[k] = (count[k] + v) % mod;
+        k += lowbit(k);
+    }
+}
+ll sum(int k) {
+    ll ret = 0;
+    while (k > 0) {
+        ret = (ret + count[k]) % mod;
+        k -= lowbit(k);
+    }
+    return ret;
+}
+
+void solve() {
+    ll answer = 0;
+    for (int i = 0; i < n; ++ i) {
+        ll ad = (sum(a[i]) + 1) * a[i] % mod - sum(a[i]) + sum(a[i] - 1);
+        ad = (ad % mod + mod) % mod;
+        answer = (answer + ad) % mod;
+        add(a[i], ad);
+    }
+    answer = (answer % mod + mod) % mod;
+    printf("%I64d\n", answer);
+}
+
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; ++i) {
+        scanf("%d", a + i);
+    }
+    solve();
+    return 0;
+}

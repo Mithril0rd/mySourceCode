@@ -1,0 +1,33 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 1001;
+const int mod = 1000000007;
+
+typedef long long ll;
+
+int n, m, k;
+ll dp[MAX_N][MAX_N];
+
+void solve() {
+    for (int i = 1; i < MAX_N; ++i) {
+        dp[0][i] = 1;
+    }
+    for (int i = 1; i <= k; ++i) {
+        int sum = 0;
+        for (int j = 3; j <= max(n, m); ++j) {
+            sum = (sum + dp[i - 1][j - 2]) % mod;
+            dp[i][j] = (sum + dp[i][j - 1]) % mod;
+        }
+    }
+    printf("%I64d\n", (dp[k][n] * dp[k][m]) % mod);
+}
+
+int main() {
+    scanf("%d%d%d", &n, &m, &k);
+    solve();
+	return 0;
+}

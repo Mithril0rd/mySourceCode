@@ -1,0 +1,53 @@
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 501;
+const int INF = MAX_N * MAX_N * 1001;
+
+int n, m;
+int a[MAX_N][MAX_N];
+int sum[MAX_N][MAX_N];
+
+int get(int lx, int ly, int rx, int ry) {
+    return sum[rx][ry] - sum[lx - 1][ry] - sum[rx][ly - 1] + sum[lx - 1][ly - 1];
+}
+
+void solve() {
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= m; ++j) {
+            sum[i][j] = sum[i][j - 1] + a[i][j];
+        }
+    }
+    for (int j = 1; j <= m; ++j) {
+        for (int i = 1; i <= n; ++i) {
+            sum[i][j] += sum[i - 1][j];
+        } 
+    }
+    int ans = -INF;
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= m; ++j) {
+            int now = a[i][j];
+            for (int t = 3; t <= min(n, m); t += 2) {
+                int lx = i -  t / 2, ly = j - t / 2;
+                if (lx >= 1 && lx + t - 1 <= n && ly >= 1 && ly + t - 1 <= m) {
+                    now = get(lx, ly, lx + t - 1, ly + t - 1) - now - a[lx + 1][ly];
+                    if (now > ans) ans = now;
+                }
+            }
+        }   
+    }
+    printf("%d\n", ans);
+}
+
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            scanf("%d", &a[i][j]);
+        } 
+    }
+    solve();
+    return 0;
+}
