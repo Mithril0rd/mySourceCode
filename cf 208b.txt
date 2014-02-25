@@ -1,0 +1,45 @@
+#include <cstdio>
+#include <cstring>
+
+const int MAX_N = 53;
+
+int n;
+int dp[MAX_N][MAX_N][MAX_N][MAX_N];
+char c[MAX_N][3];
+
+int dfs(int x, int y, int z, int n) {
+	if (x < 0 || y < 0 || z < 0) return 1;
+	int &ans = dp[x][y][z][n];
+	if (ans != -1) return ans;
+	ans = 0;
+	 if (1 == n) return ans = 1;
+     if (2 == n) {
+     	if (c[x][0] == c[y][0] || c[x][1] == c[y][1]) {
+     	   return ans = 1;
+     	} else return ans = 0;
+     } 
+     if (3 == n) {
+     	if (c[y][0] == c[z][0] || c[y][1] == c[z][1]) {
+     	   return ans = ans | dfs(x, z, 0, 2);
+     	} else return ans = 0;
+     }
+     if (c[y][0] == c[z][0] || c[y][1] == c[z][1]) {
+     	ans = ans | dfs(n - 3, x, z, n - 1);
+     } 
+     if (c[n - 3][0] == c[z][0] || c[n - 3][1] == c[z][1]) {
+     	ans = ans | dfs(z, x, y, n - 1);
+     }
+     return ans;
+}
+
+int main() {
+	scanf("%d", &n);
+	memset(dp, -1, sizeof dp);
+	for (int i = 1; i <= n; ++i) {
+		scanf("%s", c[i]);
+	}
+	int ret = dfs(n - 2, n - 1, n, n);
+	if (ret > 0) puts("YES");
+	else puts("NO");
+	return 0;
+}

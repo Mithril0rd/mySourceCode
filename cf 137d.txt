@@ -1,0 +1,100 @@
+#include <iostream>
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <string.h>
+#include <cmath>
+#include <vector>
+using namespace std;
+
+const int maxn = 505;
+
+char str[maxn];
+int  cnt[maxn][maxn];
+int  dp[maxn][maxn];
+int prei[maxn][maxn];
+int ant[maxn];
+
+int MakePalindromes(int l,int r)
+{
+	int sum=0;
+    for(int i=l,j=r;i<j;i++,j--)
+    {
+       if(str[i]!=str[j])
+		  sum+=1;
+	}
+	return sum;
+}
+
+void ChangetoPalindromes(int l,int r)
+{
+	for(int i=l,j=r;i<j;i++,j--)
+	{
+		if(str[i]!=str[j])
+			str[i]=str[j];
+	}
+	for(int i=l;i<=r;i++)
+		printf("%c",str[i]);
+}
+
+int main()
+{
+	int k;
+	while(scanf("%s",str)!=EOF)
+	{
+		scanf("%d",&k);
+		int lens=strlen(str);
+        memset(cnt,0,sizeof(cnt));
+		memset(dp,0,sizeof(dp));
+        memset(ant,0,sizeof(ant));
+
+
+        for(int i=0;i<lens;i++)
+			for(int j=i;j<lens;j++)
+                cnt[i][j]=MakePalindromes(i,j);
+
+		for(int i=0;i<lens;i++)
+			dp[i][1]=cnt[0][i];
+
+		for(int i=1;i<lens;i++)
+		{
+			for(int j=2;j<=k;j++)
+			{
+				dp[i][j]=1000000000;
+                for(int p=0;p<i;p++)
+				{
+					if(dp[p][j-1]+cnt[p+1][i]<dp[i][j])
+					{
+					    dp[i][j]=dp[p][j-1]+cnt[p+1][i];
+						prei[i][j]=p;
+					}
+				}
+			}
+		}
+		int mins=1000000000;
+		int minj=0;
+		for(int i=1;i<=k;i++)
+		{
+            if(dp[lens-1][i]<mins)
+			{
+				mins=dp[lens-1][i];
+				minj=i;
+			}
+		}
+		printf("%d\n",mins);
+        ant[minj]=lens-1;
+		for(int i=minj-1;i>=1;i--)
+            ant[i]=prei[ant[i+1]][i+1];
+		ant[0]=-1;
+		for(int i=1;i<=minj;i++)
+		{
+			ChangetoPalindromes(ant[i-1]+1,ant[i]);
+			if(i<minj)
+				printf("+");
+			else
+				printf("\n");
+		}
+
+	}
+	return 0;
+}

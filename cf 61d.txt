@@ -1,0 +1,37 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 100001;
+
+int n;
+vector<pair<int, long long> > e[MAX_N];
+
+long long dfs(int u, int fa, long long dep) {
+     long long ret = dep;
+     for (int i = 0; i < e[u].size(); ++i) {
+         if (e[u][i].first != fa) {
+            ret = max(ret, dfs(e[u][i].first, u, dep + e[u][i].second));
+         }
+     }  
+     return ret;
+} 
+
+int main() {
+    scanf("%d", &n);
+    long long sum = 0;
+    for (int i = 1; i < n; ++i) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        --u, --v;
+        e[u].push_back(make_pair(v, w));
+        e[v].push_back(make_pair(u, w));
+        sum += w;
+    }
+    sum = 2 * sum - dfs(0, -1, 0LL);
+    printf("%I64d\n", sum);
+    return 0;
+}

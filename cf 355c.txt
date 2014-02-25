@@ -1,0 +1,35 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 100001;
+const int INF = 0x3f3f3f3f;
+
+int n, l, r, ql, qr;
+int w[MAX_N], sum[MAX_N];
+
+void solve() {
+	 for (int i = 1; i <= n; ++i) {
+	  	 sum[i] = sum[i - 1] + w[i];
+	 }
+     int ret = INF;
+     for (int i = 0; i <= n; ++i) {
+     	  int sumR = sum[n] - sum[i], lenR = n - i;
+     	  int now = sum[i] * l + sumR * r;
+ 	   	  if (i < lenR) now += qr * (lenR - i - 1);
+	      if (i > lenR) now += ql * (i - lenR - 1);
+       	  ret = min(ret, now);
+     }
+     printf("%d\n", ret);
+}
+
+int main() {
+	scanf("%d%d%d%d%d", &n, &l, &r, &ql, &qr);
+	for (int i = 1; i <= n; ++i) {
+		scanf("%d", &w[i]);
+	}
+	solve();
+	return 0;
+}
