@@ -1,0 +1,68 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+
+using namespace std; 
+
+const int MAX_N = 2001;
+
+typedef pair<int,int> pii;
+
+char str[MAX_N], f[MAX_N], s[MAX_N];
+vector<pii> posF, posS;
+vector<unsigned long long> hash;
+
+void solve() {
+	 int len = strlen(str), lenF = strlen(f), lenS = strlen(s);
+  	 for (int i = 0; i < len; ++i) {
+	 	 if (str[i] == f[0]) {
+	 		if (i + lenF > len) break;
+	 		bool update = true;
+	 		int st = i, ed = i;
+		   	for (int j = 0; j < lenF; ++j) {
+  	   			if (str[ed++] != f[j]) {
+  	 	   		   update = false;
+   	  	      	   break;
+  	   			}
+		   	}
+	     	if (update) posF.push_back(make_pair(st, max(st, ed - 1)));
+	 	 }
+	 }
+  	 for (int i = 0; i < len; ++i) {
+  	 	 if (str[i] == s[0]) {
+  	 		if (i + lenS > len) break;
+	 		bool update = true;
+	 		int st = i, ed = i;
+		   	for (int j = 0; j < lenS; ++j) {
+  	   			if (str[ed++] != s[j]) {
+  	 	   		   update = false;
+   	  	      	   break;
+  	   			}
+		   	}
+	     	if (update) posS.push_back(make_pair(st, max(st, ed - 1)));
+	 	 }
+  	 }
+  	  int j = 0, update = 0;
+    
+      for (int i = 0; i < posF.size(); ++i) {
+      	  int k = posF[i].first;
+ 	      unsigned long long code = 0;
+      	  for (j = 0; j < posS.size(); ++j) {
+      	      if (posF[i].first <= posS[j].first && posF[i].first + lenF <= posS[j].first + lenS) {
+  			  	 while (k < posS[j].first + lenS && k < len) code = code * 31 + str[k++] - 'a' + 1;
+  			//	 printf("%lld\n", code);
+				 hash.push_back(code);
+      	      }
+      	  }
+      } 
+      sort(hash.begin(), hash.end());
+      update = unique(hash.begin(), hash.end()) - hash.begin();
+      printf("%d\n", update);
+}
+
+int main() {
+	scanf("%s%s%s", str, f, s);
+	solve();
+	return 0;
+} 

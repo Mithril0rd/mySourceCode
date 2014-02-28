@@ -1,0 +1,39 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 100001;
+const int MAX_K = 27;
+
+int K, cnt;
+char str[MAX_N], forbid[MAX_K][3];
+
+void solve() {
+	 int len = strlen(str); 
+  	 int update = 0;
+  	  for (int i = 0; i < K; ++i) {
+  	      for (int j = 0; j < len; ++j) {
+          	  int st = 0, ed = 0;
+    	      while (str[j] == forbid[i][0] || str[j] == forbid[i][1]) {
+	        		
+		   	  		if (str[j] == forbid[i][0]) ++st;
+      				else ++ed;
+ 	   				++j;
+    	      }
+	          update += min(st, ed);
+  	      }
+  	  }
+	  printf("%d\n", update);
+}
+
+int main() {
+	scanf("%s", str);
+	scanf("%d", &K);
+	for (int i = 0; i < K; ++i) {
+		scanf("%s", forbid[i]);
+	}
+	solve();
+	return 0;	
+}
