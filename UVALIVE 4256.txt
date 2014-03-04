@@ -1,0 +1,55 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 201;
+const int INF = 0x3f3f3f3f;
+
+int n, m, x;
+int G[MAX_N][MAX_N];
+int dp[MAX_N][MAX_N];
+int num[MAX_N];
+
+int dfs(int cur, int fa) {
+	int &ans = dp[cur][fa];
+	if (ans != -1) return ans;
+	if (cur == 0) return 0;
+	ans = INF;
+	for (int v = 1; v <= n; ++v) {
+		if (G[v][fa]) {
+  		   ans = min(ans, dfs(cur - 1, v) + (v == num[cur] ? 0 : 1));
+		}
+	}
+	return ans;
+}
+
+void solve() {
+	 for (int i = 1; i <= n; ++i) {
+	  	 G[0][i] = G[i][0] = G[i][i] = true;
+	 }
+  	 memset(dp, -1, sizeof dp);
+  	 int ret = dfs(x, 0);
+  	 printf("%d\n", ret);
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int i = 0; i < T; ++i) {
+		scanf("%d%d", &n, &m);
+  		memset(G, 0, sizeof G);
+  		for (int j = 0; j < m; ++j) {
+	 		int u, v;
+	   		scanf("%d%d", &u, &v);
+	  	  	G[u][v] = G[v][u] = true;
+  		}
+ 		scanf("%d", &x);
+		for (int j = 1; j <= x; ++j) {
+	 		scanf("%d", num + j);
+		}
+	 	solve();
+	} 
+	return 0;
+}

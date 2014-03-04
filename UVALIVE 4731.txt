@@ -1,0 +1,54 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 101;
+const int INF = 0x7fffffff;
+
+int w, n, total;
+int num[MAX_N];
+double p[MAX_N], dp[MAX_N][MAX_N], sum[MAX_N];
+
+bool cmp(int a, int b) {
+	return a > b;
+}
+
+void solve() {
+	sort(num + 1, num + n + 1, cmp);
+	sum[0] = 0;
+	for (int i = 1; i <= n; ++i) {
+		p[i] = num[i] * 1. / total;
+		sum[i] = sum[i - 1] + p[i];
+	}
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 0; j <= w; ++j) {
+	 		dp[i][j] = INF;
+	   		dp[0][j] = 0.0;
+		}
+	}
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= w; ++j) {
+	 		for (int k = 1; k <= i; ++k) {
+	   			dp[i][j] = min(dp[i][j], dp[k - 1][j - 1] + i * (sum[i] - sum[k - 1]));
+	 		}
+		}
+	} 
+	printf("%.4lf\n", dp[n][w]);
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int i = 0; i < T; ++i) {
+		scanf("%d%d", &n, &w);
+		total = 0;
+		for (int i = 1; i <= n; ++i) {
+			scanf("%d", num + i);
+			total += num[i];
+		}
+		solve();
+	}
+	return 0;
+}

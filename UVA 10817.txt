@@ -1,0 +1,60 @@
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+#include <algorithm>
+
+using namespace std; 
+
+const int MAX_N = 8;
+const int MAX_P = 121;
+const int INF = 0x3f3f3f3f;
+
+int s, m, n;
+int sta1, sta2, sum;
+char str[101];
+int dp[1 << MAX_N][1 << MAX_N];
+int p[MAX_P], cost[MAX_P];
+
+void solve() {
+	 int limit = 1 << s;
+  	 for (int i = 0; i < limit; ++i) {
+  	  	 fill(dp[i], dp[i] + limit, INF);
+  	 }
+	 dp[sta1][sta2] = sum;	 
+  	 for (int i = n; i < n + m; ++i) {
+  	 	 for (int s1 = limit - 1; s1 >= 0; --s1) {
+ 	  	 	 for (int s2 = limit - 1; s2 >= 0; --s2) {
+  	   	 	 	 if (dp[s1][s2] >= INF) continue;
+		    	 sta1 = p[i] | s1;
+     	  		 sta2 = (p[i] & s1) | s2;
+   	  	 		 dp[sta1][sta2] = min(dp[sta1][sta2], dp[s1][s2] + cost[i]);
+ 	  	 	 }
+  	 	 }
+  	 }
+  	 printf("%d\n", dp[limit - 1][limit - 1]);
+}
+
+int main() {
+	while (3 == scanf("%d%d%d", &s, &n, &m)) {
+		  if (s == 0 && n == 0 && m == 0) break;
+    	      sta1 = sta2 = sum = 0;
+  	      memset(p, 0, sizeof p);
+ 		  for (int i = 0; i < n + m; ++i) {
+	          scanf("%d", cost + i);
+           	  if (i < n) sum += cost[i];
+           	  gets(str);
+      	      for (int j = 0; j < strlen(str); ++j) {
+           	  	  if (isdigit(str[j])) {
+    				   int num = str[j] - '0';
+  	   	    		   p[i] |= 1 << (num - 1);
+      	     	   	   if (i < n) {
+              	 	   	  if (sta1 >> (num - 1) & 1) sta2 |= 1 << (num - 1); 
+			   	          sta1 |= 1 << (num - 1);
+      	     	   	   }
+           	  	  }
+      	      }
+ 		  }
+     	  solve();
+	}
+	return 0;
+}

@@ -1,0 +1,39 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+const int MAX_N = 10001;
+const int INF = 0x3f3f3f3f;
+
+int n;
+int num[MAX_N], fall[MAX_N], rise[MAX_N], p1[MAX_N], p2[MAX_N];
+
+void solve() {
+	 fill(fall, fall + n, INF);
+	 fill(rise, rise + n, INF);
+	 for (int i = 0; i < n; ++i) {
+	 	*lower_bound(fall, fall + n, num[i]) = num[i];
+		p1[i] = lower_bound(fall, fall + n, num[i]) - fall;
+		*lower_bound(rise, rise + n, num[n-i-1]) = num[n-i-1];
+		p2[n-i-1] = lower_bound(rise, rise + n, num[n-i-1]) - rise;
+     }
+		 
+	 int Max = 0;
+	 for (int i = 0; i < n; ++i) {
+		Max = max(Max, min(p1[i], p2[i]));
+     } 
+	 printf("%d\n", 2 * Max + 1);
+}
+
+int main() {
+	while (1 == scanf("%d", &n)) {
+		for (int i = 0; i < n; ++i) {
+			scanf("%d", &num[i]);
+		}
+ 		solve();
+	}
+	return 0;
+}

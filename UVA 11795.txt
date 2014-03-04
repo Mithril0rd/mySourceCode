@@ -1,0 +1,54 @@
+#include <cstdio>
+#include <cstring>
+
+const int MAX_N = 17;
+typedef long long ll;
+
+int n;
+ll mega, robot[MAX_N];
+char Mega[MAX_N], Robot[MAX_N];
+ll dp[1 << MAX_N], kill[1 << MAX_N];
+
+ll solve() {
+	int limit = 1 << n;
+	kill[0] = mega;
+	for (int s = 1; s < limit; ++s) {
+		kill[s] = mega;
+		for (int j = 0; j < n; ++j) {
+	 		if (s >> j & 1) kill[s] |= robot[j];
+		}
+	}
+	memset(dp, 0, sizeof dp);
+	dp[0] = 1;
+	for (int s = 1; s < limit; ++s) {
+		dp[s] = 0;
+  		for (int j = 0; j < n; ++j) {
+ 			if (s >> j & 1 && kill[s ^ (1 << j)] >> j & 1) {
+  	 		   dp[s] += dp[s ^ (1 << j)];
+ 			}
+  		}
+	}
+	return dp[limit - 1];
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int i = 1; i <= T; ++i) {
+		scanf("%d%s", &n, Mega);
+  		mega = 0;
+	 	for (int j = 0; Mega[j]; ++j) {
+	  		if ('1' == Mega[j]) mega |= (1 << j);
+	 	}
+ 	 	for (int j = 0; j < n; ++j) {
+	 		scanf("%s", Robot);
+	   		robot[j] = 0;
+ 		   	for (int k = 0; Robot[k]; ++k) {
+   	   			if ('1' == Robot[k]) robot[j] |= (1 << k);
+ 		   	}
+ 	 	}
+	 	ll ret = solve();
+	 	printf("Case %d: %lld\n", i, ret);
+	}
+	return 0;
+}

@@ -1,0 +1,67 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 1001;
+const int INF = 0x7fffffff;
+
+char str[MAX_N];
+int dp[MAX_N][MAX_N];
+bool vis[27];
+int K;
+
+void solve() {
+	int block = strlen(str) / K;
+	
+	for (int i = 0; i < block; ++i) {
+		for (int j = 0; j < K; ++j) {
+			dp[i][j] = INF;
+		}
+	}
+	
+	for (int i = 0; i < block; ++i) {
+		
+		memset(vis, false, sizeof vis);
+		for (int j = K * i; j < K * (i + 1); ++j) {
+			vis[str[j] - 'a'] = true;
+		}
+		int chunk = 0;
+		for (int j = 0; j < 26; ++j) {
+			if (vis[j]) ++chunk;
+		}
+		 
+		if (0 == i) {
+			for (int j = 0; j < K; ++j) {
+				dp[i][j] = chunk;
+			}
+			continue;
+		}
+		for (int j = 0; j < K; ++j) {
+			int next_pre = i * K + j;
+			for (int k = 0; k < K; ++k) {
+				int last_rear = (i - 1) * K + k;
+				if (vis[str[last_rear] - 'a'] && (chunk == 1 || str[last_rear] != str[next_pre])) {
+					dp[i][j] = min(dp[i][j], dp[i-1][k] + chunk - 1);
+				} else dp[i][j] = min(dp[i][j], dp[i-1][k] + chunk);
+			}
+		}
+		 
+	}
+	int ret = INF;
+	for (int j = 0; j < K; ++j) {
+		ret = min(ret, dp[block - 1][j]);
+	}
+	printf("%d\n", ret);
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int i = 0; i < T; ++i) {
+		scanf("%d%s", &K, str);
+		solve();
+	}
+	return 0;
+}

@@ -1,0 +1,46 @@
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+#include <algorithm>
+
+using namespace std; 
+
+const int MAX_N = 101;
+
+int dp[MAX_N][MAX_N];
+int ans[MAX_N];
+char a[MAX_N], b[MAX_N];
+
+void solve() {
+	 int len = strlen(a);
+  	 memset(dp, 0, sizeof dp);
+  	 for (int i = 0; i < len; ++i) {
+  	  	 dp[i][i] = 1;
+  	 }
+  	 for (int k = 2; k <= len; ++k) {
+  	 	 for (int i = 0; i + k - 1 < len; ++i) {
+ 	        dp[i][i + k - 1] = dp[i + 1][i + k - 1] + (b[i] == b[i + k - 1] ? 0 : 1);
+	     	for (int j = i + 1; j < i + k - 1; ++j) {
+   	   			if (b[i] == b[j]) {
+	 		   	   dp[i][i + k - 1] = min(dp[i][i + k - 1], dp[i + 1][j] + dp[j + 1][i + k - 1]);
+   	   			}
+	     	}
+  	 	 }
+  	 }
+  	 memset(ans, 0, sizeof ans); 
+  	 for (int i = 0; i < len; ++i) {
+  	  	 ans[i] = dp[0][i];
+ 		 if (a[i] == b[i]) ans[i] = ans[i - 1];
+	 	 for (int j = 0; j < i; ++j) {
+ 	  	 	 ans[i] = min(ans[i], ans[j] + dp[j + 1][i]);
+	 	 }
+  	 }
+  	 printf("%d\n", ans[len - 1]);
+}
+
+int main() {
+	while (2 == scanf("%s%s", a, b)) {
+ 		  solve();
+	}
+	return 0;
+}

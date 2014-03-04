@@ -1,0 +1,57 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int dir[8][2] = {2,1, 2,-1, 1,2, 1,-2, -1,2, -1,-2, -2,1, -2,-1};
+const char goal[6][6] = {"11111", "01111", "00*11", "00001", "00000"};
+const int MAX_N = 6;
+
+int ans;
+char st[MAX_N][MAX_N];
+
+void dfs(int x, int y, int dep, int deff, int pre) {
+	 if (0 == deff) {
+	  	ans = dep;
+	  	return ;
+	 }
+  	 for (int i = 0; i < 8; ++i) {
+  	  	 if (i + pre == 7) continue;
+  	 	 int nx = x + dir[i][0];
+ 	  	 int ny = y + dir[i][1];
+   	  	 if (nx >= 0 && nx < 5 && ny >= 0 && ny < 5) {
+   	 	 	int nowDeff = deff - (st[x][y] != goal[x][y]) - (st[nx][ny] != goal[nx][ny]);
+ 			swap(st[nx][ny], st[x][y]);
+	   		nowDeff = nowDeff + (st[x][y] != goal[x][y]) + (st[nx][ny] != goal[nx][ny]);
+  		  	if (nowDeff + dep < ans) dfs(nx, ny, dep + 1, nowDeff, i);
+     		swap(st[nx][ny], st[x][y]);
+   	  	 }
+  	 }
+}
+
+void solve() {
+	 int x = 0, y = 0, cnt = 0;
+  	 for (int i = 0; i < 5; ++i) {
+  	  	 for (int j = 0; j < 5; ++j) {
+ 	  	  	 if (st[i][j] != goal[i][j]) ++cnt;
+  		   	 if (st[i][j] == '*') x = i, y = j;
+  	  	 } 
+  	 }
+  	 ans = 16;
+  	 dfs(x, y, 0, cnt, -1);
+  	 if (ans > 15) puts("-1");
+	 else printf("%d\n", ans);
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int i = 0; i < T; ++i) {
+		for (int j = 0; j < 5; ++j) {
+	 		scanf("%s", st[j]);
+		}
+	 	solve();
+	}
+	return 0;
+}

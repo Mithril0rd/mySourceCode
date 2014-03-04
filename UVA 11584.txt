@@ -1,0 +1,45 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 1001;
+const int INF = 0x3f3f3f3f;
+
+int dp[MAX_N];
+char str[MAX_N];
+
+bool Palindrome(int l, int r) {
+	 int mid = (r - l) >> 1;
+  	 for (int i = 0; i <= mid; ++i) {
+  	  	 if (str[l + i] != str[r - i]) return false;
+  	 }
+	 return true;
+}
+
+void solve() {
+	 int len = strlen(str);
+  	 dp[0] = 0;
+  	 for (int i = 1; i < len; ++i) {
+  	  	 int Min = INF;
+  	  	 dp[i] = INF;
+	   	  for (int j = 0; j < i; ++j) {
+ 	  	  	  if (Palindrome(j + 1, i)) dp[i] = min(dp[i], dp[j] + 1);
+  	 	  	  else dp[i] = min(dp[i], dp[j] + i - j);
+   		  }
+  	 }
+  	  printf("%d\n", dp[len - 1]);
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int i = 0; i < T; ++i) {
+		memset(dp, 0, sizeof dp);
+  		str[0] = '*';
+		scanf("%s", str + 1);
+		solve();
+	}
+	return 0;
+}
