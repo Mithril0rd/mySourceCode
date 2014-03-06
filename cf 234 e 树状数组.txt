@@ -47,13 +47,16 @@ int main()
     for (i = 0; i < 17; i++) {
         for (j = 0; j < n; j++) {
         	
-            for (k = j; k < n; k++) {
-                if (((a[k] >> i) & 1) == 0) break;
-            }
-            
-            ans += (long long)(k - j) * (k - j + 1) / 2 * (1 << i);
-            
-            j = k;
+        	if (a[j] >> i & 1) {
+        	
+	            for (k = j; k < n; k++) {
+	                if (((a[k] >> i) & 1) == 0) break;
+	            }
+	            
+	            ans += (long long)(k - j) * (k - j + 1) / 2 * (1 << i);
+	            
+	            j = k;
+        	}
         }
     }
     
