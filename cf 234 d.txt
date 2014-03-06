@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <string.h>
+#include <algorithm>
+#include <vector>
+#include <set>
+
+using namespace std;
+
+typedef pair<int,int> pii;
+typedef long long ll;
+
+int sjb[111111];
+int ufs_find(int x) { return sjb[x] == x ? x : sjb[x] = ufs_find(sjb[x]); }
+
+int ufs_union(int x,int y)
+{
+	x = ufs_find(x);
+	y = ufs_find(y);
+	if(x != y) sjb[x] = y;
+	return 0;
+}
+
+int btype[111111];
+int cnt[555];
+
+int G[555][555];
+
+int main(void)
+{
+	int n = 0;
+	int m = 0;
+	int k = 0;
+	scanf("%d %d %d",&n,&m,&k);
+	for(int i = 0;i < k;i++) scanf("%d",&cnt[i]);
+	int t = 0;
+	for(int i = 0;i < k;i++) for(int j = 0;j < cnt[i];j++) btype[t++] = i;
+
+	memset(G,0x3F,sizeof(G));
+	for(int i = 0;i < k;i++) G[i][i] = 0;
+	for(int i = 0;i < n;i++) sjb[i] = i;
+	for(int i = 0;i < m;i++)
+	{
+		int u = 0;
+		int v = 0;
+		int c = 0;
+		scanf("%d %d %d",&u,&v,&c); u--; v--;
+
+		if(c == 0) ufs_union(u,v);
+		if(btype[u] != btype[v])
+		{
+			G[btype[u]][btype[v]] = min(G[btype[u]][btype[v]],c);
+			G[btype[v]][btype[u]] = min(G[btype[v]][btype[u]],c);
+		}
+	}
+	bool valid = true;
+	t = 0;
+	for(int i = 0;i < k && valid;i++)
+	{
+		int ori = t;
+		for(int j = 0;j < cnt[i];j++) if(ufs_find(t++) != ufs_find(ori)) valid = false;
+	}
+	if(!valid) puts("No");
+	else
+	{
+		for(int pass = 0;pass < k;pass++)
+		{
+			for(int i = 0;i < k;i++)
+			{
+				for(int j = 0;j < k;j++)
+				{
+					G[i][j] = min(G[i][j],G[i][pass]+G[pass][j]);
+				}
+			}
+		}
+		puts("Yes");
+		for(int i = 0;i < k;i++)
+		{
+			for(int j = 0;j < k;j++)
+			{
+				if(G[i][j] > 0x3F000000) G[i][j] = -1;
+				printf("%d%c",G[i][j],j == k-1 ? '\n' : ' ');
+			}
+		}
+	}
+	while(getchar() != EOF);
+	return 0;
+}

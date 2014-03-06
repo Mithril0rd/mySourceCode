@@ -1,0 +1,50 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 100001;
+
+int n, m, x, y, z, p;
+int X[MAX_N], Y[MAX_N];
+
+void solve() {
+	 x = x % 4;
+  	 for (int i = 0; i < x; ++i) {
+  	  	 for (int j = 0; j < p; ++j) {
+ 	  	  	 int t = X[j];
+ 	  	  	 X[j] = Y[j];
+    	  	 Y[j] = n - t + 1;
+  	  	 }
+ 	  	 swap(n, m);
+  	 }
+	 y = y % 2;
+  	 for (int i = 0; i < y; ++i) {
+  	  	 for (int j = 0; j < p; ++j) {
+ 	  	  	 Y[j] = m - Y[j] + 1;
+  	  	 }
+  	 }
+     z = z % 4;
+     for (int i = 0; i < z; ++i) {
+     	 for (int j = 0; j < p; ++j) {
+     	  	 int t = X[j];
+     	  	 X[j] = m - Y[j] + 1;
+   	   		 Y[j] = t;
+     	 }
+  	  	 swap(n, m);
+     }
+     for (int i = 0; i < p; ++i) {
+     	 printf("%d %d\n", X[i], Y[i]);
+     }
+}
+
+
+int main() {
+	scanf("%d%d%d%d%d%d", &n, &m, &x, &y, &z, &p);
+	for (int i = 0; i < p; ++i) {
+		scanf("%d%d", X + i, Y + i);
+	}
+	solve();
+	return 0;
+}

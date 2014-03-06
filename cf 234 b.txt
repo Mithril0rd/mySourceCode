@@ -1,0 +1,44 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 1001;
+
+typedef pair<int,int> pii;
+
+int n, m;
+char mat[MAX_N][MAX_N];
+pii pos[MAX_N];
+vector<int> dis;
+
+void solve() {
+	 for (int i = 0; i < n; ++i) {
+	  	 dis.push_back(pos[i].second - pos[i].first);
+	 }
+  	 sort(dis.begin(), dis.end());
+  	 vector<int>::iterator iter = unique(dis.begin(),dis.end()); 
+     dis.erase(iter, dis.end()); 
+     int ans = dis.size();
+     printf("%d\n", ans);
+}
+
+int main() {
+	scanf("%d%d", &n, &m);
+	bool update = true;
+	for (int i = 0; i < n; ++i) {
+		scanf("%s", mat[i]);
+		int G = 0, S = 0;
+		for (int j = 0; j < m; ++j) {
+	 		if (mat[i][j] == 'G') G = j;
+		  	if (mat[i][j] == 'S') S = j;
+		}
+	 	if (S < G) update = false;
+	 	pos[i] = make_pair(G, S);
+	}
+	if (!update) puts("-1");
+	else solve();
+	return 0;
+}

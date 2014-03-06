@@ -1,0 +1,44 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+const int MAX_N = 21;
+char s[MAX_N];
+bool w[MAX_N][MAX_N];
+
+void solve() {
+	 int cnt = 0;
+	 for (int i = 1; i <= 12; ++i) {
+			if (12 % i == 0) {
+				int j = 12 / i;
+				for (int k = 1; k <= j; ++k) {
+					bool f = true;
+					char c = s[k];
+					if (c == 'O') continue;
+					for (int z = 1; z <= i; ++z)
+						if (s[(z - 1) * j + k] != c)
+							f = false;
+					if (f && !w[i][j]) {
+						w[i][j] = true;
+						++ cnt;
+					}
+				}
+			}
+	 }
+		printf("%d", cnt);
+		for (int i = 1; i <= 12; ++i)
+			if (12 % i == 0 && w[i][12 / i])
+					printf(" %dx%d", i, 12 / i);
+		puts("");
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int i = 0; i < T; ++i) {
+		memset(w, 0, sizeof w);
+		scanf("%s", s + 1);
+		solve();
+	}
+	return 0;
+}
