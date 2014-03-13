@@ -1,0 +1,53 @@
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 101;
+const int INF = 0x3f3f3f3f;
+
+struct Point {
+	double x, y;
+} p[MAX_N];
+
+int n;
+double dp[MAX_N][MAX_N];
+double dis[MAX_N][MAX_N];
+
+double get(Point p1, Point p2) {
+	return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+}
+
+void solve() {
+	for (int i = 1; i <= n; ++i) {
+		dis[i][i] = 0;
+		for (int j = i + 1; j <= n; ++j) {
+			dis[i][j] = dis[j][i] = get(p[i], p[j]);
+		}
+	}
+	memset(dp, 0, sizeof dp);
+	for (int i = 2; i <= n; ++i) {
+		dp[i][1] = dis[i][1];
+	}
+	for (int i = 2; i < n; ++i) {
+		dp[i + 1][i] = INF;
+		for (int j = 1; j < i; ++j) {
+			dp[i + 1][j] = dp[i][j] + dis[i][i + 1];
+			dp[i + 1][i] = min(dp[i + 1][i], dp[i][j] + dis[j][i + 1]);
+		}
+	}
+	double ans = dp[n][n - 1] + dis[n - 1][n]; 
+	printf("%.2lf\n", ans);
+}
+
+int main() {
+	while (1 == scanf("%d", &n)) {
+	 	for (int i = 1; i <= n; ++i) {
+			scanf("%lf%lf", &p[i].x, &p[i].y);
+		} 
+		solve();
+	}
+ 	return 0;
+} 
