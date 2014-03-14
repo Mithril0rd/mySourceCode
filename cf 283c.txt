@@ -1,0 +1,66 @@
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+
+using namespace std; 
+
+const int MAX_N = 301;
+const int MAX_M = 100001;
+const int mod = 1000000007;
+
+int n, q, t;
+int a[MAX_N], b[MAX_N], w[MAX_M];
+bool zero[MAX_N], great[MAX_N][MAX_N];
+
+void solve() {
+	 for (int k = 0; k < n; ++k) {
+	  	 for (int i = 0; i < n; ++i) {
+  	  	 	 for (int j = 0; j < n; ++j) {
+ 	  	   	 	 great[i][j] = great[i][j] | (great[i][k] && great[k][j]);
+  	  	 	 }
+	  	 } 
+	 }
+	bool cycle = false;
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < i; ++j) {
+	 		cycle = cycle | (great[i][j] && great[j][i]);
+		}
+	}
+	if (cycle) puts("0");
+	else {
+ 		 w[0] = 1;
+	   	 for (int i = 0; i < n; ++i) {
+  	 	 	 great[i][i] = true;
+      		 int sz = 0;
+ 	  		 for (int j = 0; j < n; ++j) {
+	 	   	 	 if (great[j][i]) sz += a[j];
+ 	  		 }
+   	 	 	 if (!zero[i]) {
+	   		 	for (int j = t; j >= 0; --j) {
+ 		   	 		w[j] = j >= sz ? w[j - sz] : 0;
+	   		 	}
+   	 	 	 }
+	  	 	 for (int j = sz; j <= t; ++j) {
+  	   		 	 w[j] = (w[j] + w[j - sz]) % mod;
+	  	 	 }
+	   	 }
+      	 printf("%d\n", w[t]);
+	}
+}
+
+int main() {
+	scanf("%d%d%d", &n, &q, &t);
+	for (int i = 0; i < n; ++i) {
+		scanf("%d", a + i);
+	}
+	fill(zero, zero + MAX_N, true);
+	for (int i = 0; i < q; ++i) {
+		int x, y;
+		scanf("%d%d", &x, &y);
+		--x, --y;
+	 	zero[x] = false;
+ 		great[x][y] = true;
+	}
+	solve();
+	return 0;
+} 

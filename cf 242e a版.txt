@@ -1,0 +1,104 @@
+#include <cstdio>
+#include <cstring>
+
+const int MAX_N = 100001;
+const int MAX_X = 21;
+
+#define lson idx << 1
+#define rson idx << 1 | 1
+
+int n, m;
+int a[MAX_N];
+struct Node {
+	int l, r, sum, xo;
+} T[MAX_X][MAX_N << 2];
+
+void up(int i, int idx) {
+	T[i][idx].sum = T[i][lson].sum + T[i][rson].sum;
+}
+
+void build(int i, int idx, int l, int r) {
+	T[i][idx] = (Node) {l, r, 0, 0};
+	if (l == r) {
+		T[i][idx].sum = a[l] >> i & 1;
+		return ;
+	}
+	int mid = (l + r) >> 1;
+	build(i, lson, l, mid);
+	build(i, rson, mid + 1, r);
+	up(i, idx);
+} 
+
+int get(int i, int idx) {
+	if (T[i][idx].xo == 1) return (T[i][idx].r - T[i][idx].l + 1) - T[i][idx].sum;
+	else return T[i][idx].sum;
+}
+
+void down(int i, int idx) {
+	if (T[i][idx].xo == 1) {
+		T[i][lson].xo ^= 1, T[i][rson].xo ^= 1;
+		T[i][idx].xo = 0;
+	}
+}
+
+void up2(int i, int idx) {
+	T[i][idx].sum = get(i, lson) + get(i, rson);
+}
+
+int query(int i, int idx, int l, int r) {
+	if (l == T[i][idx].l && T[i][idx].r == r) {
+		return get(i, idx);
+	}
+	down(i, idx);
+	int mid = (T[i][idx].l + T[i][idx].r) >> 1;
+	int ans = 0;
+	if (l > mid) ans = query(i, rson, l, r);
+	else if (r <= mid) ans = query(i, lson, l, r);
+	else ans = query(i, lson, l, mid) + query(i, rson, mid + 1, r);
+	up2(i, idx);
+	return ans;
+}
+
+void update(int i, int idx, int l, int r) {
+	if (l <= T[i][idx].l && T[i][idx].r <= r) {
+		T[i][idx].xo ^= 1;
+		return ;
+	}
+	down(i, idx);
+	int mid = (T[i][idx].l + T[i][idx].r) >> 1;
+	if (l > mid) update(i, rson, l, r);
+	else if (r <= mid) update(i, lson, l, r);
+	else update(i, lson, l, mid), update(i, rson, mid + 1, r);
+	up2(i, idx);
+}
+
+int main() {
+	scanf("%d", &n);
+	for (int i = 1; i <= n; ++i) {
+		scanf("%d", a + i);
+	}
+	for (int i = 0; i < MAX_X; ++i) {
+		build(i, 1, 1, n);
+	}
+	scanf("%d", &m);
+	for (int i = 0; i < m; ++i) {
+		int type;
+		scanf("%d", &type);
+		if (1 == type) {
+			int l, r;
+			scanf("%d%d", &l, &r);
+			long long ans = 0;
+			for (int j = 0; j < MAX_X; ++j) {
+				ans += (long long)query(j, 1, l, r) * (1 << j);
+			}
+			printf("%I64d\n", ans);
+		} else {
+			int l, r, val;
+			scanf("%d%d%d", &l, &r, &val);
+			for (int j = 0; j < MAX_X; ++j) {
+				if (val >> j & 1) update(j, 1, l, r);
+			}
+		}
+	}
+	return 0;
+}

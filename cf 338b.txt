@@ -1,0 +1,81 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <iostream>
+
+using namespace std; 
+
+const int MAX_N = 1001;
+
+int n;
+int mat[MAX_N][MAX_N];
+int vis[101];
+vector<int> v;
+
+int cal(int x) {
+	int len = 0;
+	while (x > 0) {
+		vis[len++] = x % 3;
+		x /= 3;
+	}
+	return len;
+}
+
+void solve() {
+	int num = 3;
+	int len = cal(n);
+	for (int i = 0; i < len; ++i) {
+		if (vis[i] > 0) {
+			v.clear();
+			if (vis[i] == 1) {
+				mat[1][num] = 1;
+				v.push_back(num++);
+			} else {
+				mat[1][num] = 1;
+				v.push_back(num++);
+				mat[1][num] = 1;
+				v.push_back(num++);
+			}
+			
+			for (int j = 0; j <= i; ++j) {
+				for (int k = 0; k < v.size(); ++k) {
+					mat[v[k]][num] = mat[v[k]][num + 1] = mat[v[k]][num + 2] = 1;
+				}
+				v.clear();
+				v.push_back(num), v.push_back(num + 1), v.push_back(num + 2);
+				num += 3; 
+			}
+			num -= 3;
+			for (int j = 1; j < MAX_N; ++j) {
+				mat[j][num + 1] = mat[j][num + 2] = 0;
+			}
+			int j = i + 1;
+			while (j < len) { 
+				mat[num][num + 1] = 1;
+				++num;
+				++j;
+			} 
+			mat[num++][2] = 1;
+		}
+	}
+	--num;
+    for (int i = 1; i <= num; ++i) {
+    	for (int j = 1; j <= num; ++j) {
+    		if (mat[i][j] == 1) mat[j][i] = 1;
+    	}
+    }
+	printf("%d\n", num);
+	for (int i = 1; i <= num; ++i) {
+		for (int j = 1; j <= num; ++j) {
+			if (mat[i][j] == 1) cout << "Y";
+			else cout << "N"; 
+		}
+		cout << endl;
+	}
+}
+
+int main() {
+	scanf("%d", &n);
+	solve();
+	return 0;
+}

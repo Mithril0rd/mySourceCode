@@ -1,0 +1,115 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <queue>
+#include <algorithm> 
+
+using namespace std;
+
+const int MAX_N = 51;
+const int MAX_S = 1 << 11;
+const int INF = 0x3f3f3f3f;
+const int POW = 10000;
+const int MAX_M = 2001;
+
+struct Node {
+	int v, w, next;
+} G[MAX_M];
+
+int n, m, K;
+int dp[MAX_N][MAX_S], d[MAX_S], st[MAX_N]; 
+bool vis[MAX_N][MAX_S];
+int head[MAX_N], edgecnt;
+
+void addedge(int u, int v, int w) {
+	G[edgecnt] = (Node) {v, w, head[u]};
+	head[u] = edgecnt++; 
+}
+
+queue<int> q;
+
+void spfa() {
+	while (!q.empty()) {
+		int top = q.front(); q.pop();
+		int x = top / POW, y = top % POW;
+		for (int i = head[x]; ~i; i = G[i].next) {
+			int v = G[i].v, w = G[i].w;
+			if (dp[x][y] + w < dp[v][y | st[v]]) {
+				dp[v][y | st[v]] = dp[x][y] + w;
+				if (!vis[v][y] && y == (y | st[v])) {
+					vis[v][y] = true;
+					q.push(v * POW + y); 
+				}
+			}
+		}
+		vis[x][y] = false; 
+	}
+}
+
+bool check(int x) {
+	int sum = 0;
+	for (int i = 0; x > 0; ++i, x >>= 1) {
+		sum += (x & 1) * (i < K ? 1 : -1);
+	}
+	return sum == 0;
+}
+
+void solve() {
+	int limit = 1 << (K << 1);
+	memset(dp, 0x3f, sizeof dp);
+	memset(vis, false, sizeof vis);
+	memset(st, 0, sizeof st);
+	memset(d, 0, sizeof d);
+	
+	for (int i = 1; i <= K; ++i) {
+		st[i] = 1 << (i - 1), st[n - i + 1] = 1 << (K + i - 1);
+		dp[i][st[i]] = 0; dp[n - i + 1][st[n - i + 1]] = 0;  
+	}
+ 
+	for (int s = 0; s < limit; ++s) {
+		for (int i = 1; i <= n; ++i) {
+			for (int other = (s - 1) & s; other > 0; other = (other - 1) & s) {
+				dp[i][s] = min(dp[i][s], dp[i][other | st[i]] + dp[i][(s - other) | st[i]]);
+			}
+			if (dp[i][s] < INF) q.push(i * POW + s), vis[i][s] = true;
+		} 
+		spfa(); 
+	}
+	for (int s = 0; s < limit; ++s) {
+		d[s] = INF;
+		for (int i = 1; i <= n; ++i) {
+			d[s] = min(d[s], dp[i][s]);
+		}
+	}
+	for (int i = 1; i < limit; ++i) {
+		if (check(i)) {
+			for (int j = (i - 1) & i; j > 0; j = (j - 1) & i) {
+				if (check(j)) {
+					d[i] = min(d[i], d[j] + d[i - j]);
+				}
+			}
+		}
+	}
+	int ans = d[limit - 1];
+	if (ans >= INF) puts("No solution");
+	else printf("%d\n", ans); 
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int i = 0; i < T; ++i) {
+		edgecnt = 0;
+		memset(head, -1, sizeof head);
+		memset(G, 0, sizeof G);
+		scanf("%d%d%d", &n, &m, &K);
+		for (int j = 0; j < m; ++j) {
+			int u, v, w;
+			scanf("%d%d%d", &u, &v, &w);
+			addedge(u, v, w);
+			addedge(v, u, w);
+		}
+		solve();
+	}
+	return 0;
+} 
