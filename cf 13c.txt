@@ -1,0 +1,46 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 5001;
+
+int n;
+int a[MAX_N], b[MAX_N];
+long long dp[2][MAX_N];
+vector<int> vec;
+
+void solve() {
+	sort(vec.begin(), vec.end());
+	int cnt = 0;
+	for (int i = 0; i < n; ++i) {
+		while (i + 1 < n && vec[i] == vec[i + 1]) ++i;
+		b[cnt++] = vec[i];
+	}
+	dp[0][0] = abs(a[0] - b[0]);
+	for (int i = 1; i < cnt; ++i) {
+		dp[0][i] = min(dp[0][i - 1], (long long)abs(a[0] - b[i]));
+	}
+	
+	for (int i = 1; i < n; ++i) {
+		int crt = i & 1, next = crt ^ 1;
+		dp[crt][0] = dp[next][0] + (long long)abs(a[i] - b[0]);
+		for (int j = 1; j < cnt; ++j) {
+			dp[crt][j] = min(dp[crt][j - 1], dp[next][j] + (long long)abs(a[i] - b[j]));
+		} 
+	}
+	long long ans = dp[(n - 1) & 1][cnt - 1];
+	printf("%I64d\n", ans);
+}
+
+int main() {
+	scanf("%d", &n);
+	for (int i = 0; i < n; ++i) {
+		scanf("%d", &a[i]);
+		vec.push_back(a[i]);
+	}
+	solve();
+	return 0;
+} 

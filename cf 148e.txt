@@ -1,0 +1,50 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int MAX_N = 101;
+const int MAX_M = 10001; 
+
+int n, m;
+
+struct Shelf {
+	int x;
+	int item[MAX_N];
+} shelf[MAX_N]; 
+int sum[MAX_N][MAX_N];
+int t[MAX_N], dp[MAX_M];
+
+void solve() {
+	for (int i = 0; i < n; ++i) {
+		for (int j = 1; j <= shelf[i].x; ++j) {
+			sum[i][j] = sum[i][j - 1] + shelf[i].item[j];
+		}
+		memset(t, 0, sizeof t);
+		for (int j = 0; j < shelf[i].x; ++j) {
+			for (int k = j; k <= shelf[i].x; ++k) {
+				t[shelf[i].x - k + j] = max(t[shelf[i].x - k + j], sum[i][shelf[i].x] - sum[i][k] + sum[i][j]);
+			}
+		} 
+		for (int j = m; j > 0; --j) {
+			for (int k = min(j, shelf[i].x); k > 0; --k) {
+				dp[j] = max(dp[j], dp[j - k] + t[k]);
+			}
+		}
+	}
+
+	printf("%d\n", dp[m]);
+}
+
+int main() {
+	scanf("%d%d", &n, &m);
+	for (int i = 0; i < n; ++i) {
+		scanf("%d", &shelf[i].x);
+		for (int j = 1; j <= shelf[i].x; ++j) {
+			scanf("%d", &shelf[i].item[j]);
+		}
+	}
+	solve();
+	return 0;
+} 
