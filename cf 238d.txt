@@ -1,0 +1,77 @@
+#include <cstdio>
+#include <cstring>
+#include <stack>
+#include <algorithm> 
+
+using namespace std;
+
+const int MAX_N = 100001;
+const int MAX_V = 18;
+
+struct Hill {
+	long long x, y;
+} hill[MAX_N]; 
+
+int n, m;
+int parent[MAX_V][MAX_N], depth[MAX_N];
+int st[MAX_N], ans[MAX_N];
+
+bool cross(int sp, int ep, int op) {
+	return (hill[sp].x - hill[op].x) * (hill[ep].y - hill[op].y) > (hill[sp].y - hill[op].y) * (hill[ep].x - hill[op].x);
+}
+
+int lca(long long u, long long v) {
+	if (depth[u] > depth[v]) swap(u, v);
+	for (int k = 0; k < MAX_V; ++k) {
+		if ((depth[v] - depth[u]) >> k & 1) {
+			v = parent[k][v];
+		}
+	}
+	if (u == v) return u;
+	for (int k = MAX_V - 1; k >= 0; --k) {
+		if (parent[k][u] != parent[k][v]) {
+			u = parent[k][u];
+			v = parent[k][v];
+		}
+	}
+	return parent[0][u];
+} 
+
+void solve() {
+	int top = 0;
+	for (int i = n; i >= 1; --i) {
+		if (i == n) {
+			st[++top] = i;
+			continue;
+		}
+		while (top > 1 && cross(i, st[top], st[top - 1])) --top;
+		parent[0][i] = st[top];
+		depth[i] = depth[st[top]] + 1;
+		st[++top] = i;
+	}
+	for (int i = 1; i < MAX_V; ++i) {
+		for (int j = 1; j <= n; ++j) {
+			parent[i][j] = parent[i - 1][parent[i - 1][j]];
+		}
+	}
+	scanf("%d", &m);
+	for (int i = 0; i < m; ++i) {
+		int u, v;
+		scanf("%d%d", &u, &v);
+		ans[i] = lca(u, v);
+	}
+	for (int i = 0; i < m; ++i) {
+		if(i == 0) printf("%d", ans[i]);
+		else printf(" %d", ans[i]); 
+	} 
+	puts("");
+}
+
+int main() {
+	scanf("%d", &n);
+	for (int i = 1; i <= n; ++i) {
+		scanf("%I64d%I64d", &hill[i].x, &hill[i].y);
+	}
+	solve();
+	return 0;
+}

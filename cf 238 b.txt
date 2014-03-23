@@ -1,0 +1,46 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+
+using namespace std;
+
+const int MAX_N = 1000001;
+const int MAX_M = 500001;
+
+typedef pair<int,int> pii;
+
+int n;
+bool vis[MAX_N];
+vector<pii> ans;
+vector<int> out;
+
+int get(int x) {
+	return 1000001 - x;
+}
+
+int main() {
+	scanf("%d", &n);
+	for (int i = 0; i < n; ++i) {
+		int val;
+		scanf("%d", &val);
+		vis[val] = true;
+	}
+	int need = 0;
+	for (int i = 1; i < MAX_M; ++i) {
+		if (!vis[i] && !vis[get(i)]) ans.push_back(make_pair(i, get(i)));
+		if (!vis[i] && vis[get(i)]) out.push_back(i);
+		if (vis[i] && !vis[get(i)]) out.push_back(get(i));
+		if (vis[i] && vis[get(i)]) ++need;
+	}
+	for (int i = 0; i < need; ++i) {
+		out.push_back(ans[i].first);
+		out.push_back(ans[i].second);
+	} 
+	printf("%d\n", out.size());
+	for (int i = 0; i < out.size(); ++i) {
+		if (i == 0) printf("%d", out[i]);
+		else printf(" %d", out[i]);
+	}
+	puts("");
+	return 0;
+}
