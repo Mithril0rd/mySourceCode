@@ -1,0 +1,45 @@
+#include <cstdio>
+
+using namespace std;
+typedef long long LL;
+
+const int MAX_N = 100003;
+const int mod = 1000000007;
+
+int n, m, a[110][MAX_N], C[MAX_N][110];
+
+void read(int &x){
+	char ch = getchar(); while (ch < '0' || ch > '9') ch = getchar();
+	for (x = 0; ch >= '0' && ch <= '9'; ch = getchar()) x = x*10+ch-48;
+}
+
+int main() {
+	read(n), read(m);
+	for (int i = 1; i <= n; ++i) read(a[0][i]);
+	C[0][0] = 1;
+	for (int i = 1; i < MAX_N; ++i) {
+		C[i][0] = 1;
+		for (int j = 1; j <= 101; ++j) {
+			C[i][j] = (C[i - 1][j] + C[i - 1][j - 1]) % mod;
+		}
+	}
+
+	while (m--) {
+		int l, r, k;
+		read(l), read(r), read(k);
+		a[k+1][l] = (a[k+1][l]+1)%mod;
+		for (int i = 1; i <= k + 1; ++i) { 
+			a[i][r+1] = (a[i][r+1]-C[r-l+k+1-i][k+1-i]+mod)%mod;
+		} 
+	}
+	for (int i = 101; i >= 0; --i) {
+		int t = 0;
+		for (int j = 1; j <= n; ++j) {
+			t = (t+a[i+1][j])%mod;
+			a[i][j] = (a[i][j]+t)%mod;
+		}
+	}
+	for (int i = 1; i < n; ++i) printf("%d ", a[0][i]); 
+	printf("%d\n", a[0][n]);
+	return 0;
+}

@@ -1,0 +1,29 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int mod = 1000000007;
+const int MAX_N = 1001;
+
+int n;
+int p[MAX_N], sum[MAX_N];
+
+int main() {
+	scanf("%d", &n);
+	for (int i = 1; i <= n; ++i) {
+		scanf("%d", &p[i]);
+		sum[i] = 2;
+	}
+	long long x = 0;
+	for (int i = 1; i <= n; ++i) {
+		x = (x + 2) % mod;
+		for (int j = p[i]; j < i; ++j) {
+			x = (x + sum[j]) % mod;
+			sum[i] = (sum[i] + sum[j]) % mod;
+		}
+	} 
+	printf("%I64d\n", x);
+	return 0;
+}

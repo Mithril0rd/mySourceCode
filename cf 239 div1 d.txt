@@ -1,0 +1,43 @@
+#include <iostream>
+
+using namespace std; 
+
+const int N = 405;
+int n , m , a[N][N];
+int row[N * N][N] , dp[N][N];
+
+int main () {
+    cin >> n >> m;
+    for (int i = 0 ; i < n ; i ++) {
+        for (int j = 0 ; j < m ; j ++) {
+            cin >> a[i][j];
+        }
+    }
+    int ans = 0;
+    for (int i = 0 ; i < n ; i ++) {
+    	
+        for (int j = 0 ; j < m ; j ++) {
+            for (int k = 0 ; k < m ; k ++) {
+                int r = k , l = j;
+                if (l > r) swap (l , r);
+                dp[l][r] = max (dp[l][r] , row[a[i][j]][k]);
+            }
+            row[a[i][j]][j] = i + 1;
+        }
+        
+        for (int j = 1 ; j < m ; j ++) {
+            for (int l = 0 ; l + j < m ; l ++) {
+                int r = l + j;
+                dp[l][r] = max (dp[l][r] , max (dp[l + 1][r] , dp[l][r - 1]));
+            }
+        }
+        
+        for (int j = 0 ; j < m ; j ++) {
+            for (int k = j ; k < m ; k ++) {
+                ans = max (ans , (k - j + 1) * (i + 1 - dp[j][k]));
+            }
+        }
+    }
+    cout << ans << endl;
+    return 0;
+}

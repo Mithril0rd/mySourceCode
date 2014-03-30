@@ -1,0 +1,29 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <cmath>
+
+int main() {
+    int a, b;
+    scanf("%d%d", &a, &b);
+    bool f = 0;
+    for(int i = 1; i < a; i ++) {
+        int t = a * a - i * i;
+        if( t == (int)sqrt(t*1.0) * (int)(sqrt(t * 1.0)) ) {
+            for(int j = 1; j < b; j ++) {
+                int p = b * b - j * j;
+                if( p == (int)sqrt(p*1.0) * (int)(sqrt(p*1.0)) ) {
+                    if( a * (int)sqrt(p *1.0) == b * i && p != t) {
+                        puts("YES");
+                        printf("%d %d\n0 0\n%d %d\n", -j, (int)sqrt(p * 1.0), i, (int)sqrt(t * 1.0));
+                        f = 1;
+                        break;
+                    }
+                }
+            }
+            if(f) break;
+        }
+    }
+    if( !f ) puts("NO");
+    return 0;
+}
